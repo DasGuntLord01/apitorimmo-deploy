@@ -1,0 +1,55 @@
+services:
+  app:
+    image: ghcr.io/${GHCR_OWNER}/apitorimmo-app:${CURRENT_RELEASE_TAG}
+    container_name: apitorimmo_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      GAME_TICK_SECONDS: ${GAME_TICK_SECONDS:-60}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/${GHCR_OWNER}/apitorimmo-web:${CURRENT_RELEASE_TAG}
+    container_name: apitorimmo_web
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    container_name: apitorimmo_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
