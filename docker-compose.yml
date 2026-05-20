@@ -36,6 +36,12 @@ services:
   mysql:
     image: mysql:8.4
     container_name: apitorimmo_mysql
+    command:
+      - --innodb-buffer-pool-size=64M
+      - --innodb-log-buffer-size=8M
+      - --max-connections=20
+      - --table-open-cache=128
+      - --performance-schema=OFF
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
