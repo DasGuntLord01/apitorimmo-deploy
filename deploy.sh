@@ -11,6 +11,7 @@ if [ ! -f .env ]; then
 fi
 
 . ./.env
+. ./.tag
 
 if [ -z "${CURRENT_RELEASE_TAG:-}" ]; then
   echo "missing CURRENT_RELEASE_TAG in .env" >&2
