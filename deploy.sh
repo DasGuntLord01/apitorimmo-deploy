@@ -18,10 +18,10 @@ if [ -z "${CURRENT_RELEASE_TAG:-}" ]; then
 fi
 
 echo "pulling images for tag $CURRENT_RELEASE_TAG"
-docker compose --env-file .env pull
+docker compose --env-file .env --env-file .tag pull
 
 echo "starting services for tag $CURRENT_RELEASE_TAG"
-docker compose --env-file .env up -d
+docker compose --env-file .env --env-file .tag up -d
 
 echo "current status"
-docker compose --env-file .env ps
+docker compose --env-file .env --env-file .tag ps
